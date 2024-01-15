@@ -56,7 +56,13 @@ export const parseNonceFromAnswers: (nonce: string) => string = nonce =>
 export const parseBodyFromAnswers: (
   body: string
 ) => E.Either<Error, J.Json> = body =>
-  pipe(body, J.parse, E.mapLeft(E.toError));
+  pipe(
+    body,
+    J.parse,
+    E.mapLeft(
+      flow(E.toError, error => `Body parsing error: ${error.message}`, Error)
+    )
+  );
 
 const outputToCurlPrompt: PromptObject = {
   name: "outputToCurl",
