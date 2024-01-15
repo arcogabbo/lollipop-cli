@@ -13,8 +13,36 @@ For example, the following argument will skip the first prompt:
 lollipop-cli --flow Sign
 ```
 
+### Flows
+#### Key pair generation
+This flow lets you create a key pair based on an algorithm supported by the protocol.
+The two choices are:
+* NIST P-256
+* RSA
+
+The output contains:
+* The JWK plain objects
+* The base64url encoded representation of both keys
+* The thumbprint of the public key(using sha-256)
+
+#### Sign
+The sign flow lets you provide a lot of parameters to feed a sign request to a lollipop consumer.
+**NOTE**: the lollipop consumer custom integration may require or ignore some parameters(like nonce and/or body parameter sign)
+The output of this flow is an object with the following fields:
+* digest(optional)
+* signature
+* signatureInput
+
+You can however decide to ouput a curl compatible shell command almost ready to go(the only missing part is the authorization token obtained by the backend).
+
+Video example:
+https://github.com/arcogabbo/lollipop-cli/assets/22002572/0dd3ea95-3c41-4ccb-a565-dc3b1002f0af
+
+#### Login
+TODO
+
 ### Run the cli locally for development
-With `npm link` or `yarn link` you can make the command available locally. 
+With `npm link` or `yarn link` you can make the command available locally via `lollipop-cli`. 
 Another option is to just run the script `dev-cli` included in the `package.json` with the package manager of your choice.
 
 ## TODO
