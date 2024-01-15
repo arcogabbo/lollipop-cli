@@ -36,6 +36,7 @@ The output of this flow is an object with the following fields:
 You can however decide to ouput a curl compatible shell command almost ready to go(the only missing part is the authorization token obtained by the backend).
 
 Video example:
+
 https://github.com/arcogabbo/lollipop-cli/assets/22002572/0dd3ea95-3c41-4ccb-a565-dc3b1002f0af
 
 #### Login
