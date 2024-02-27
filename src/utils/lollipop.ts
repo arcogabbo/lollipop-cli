@@ -123,7 +123,7 @@ const base64urltoJWK: (input: string) => E.Either<Error, jose.JWK> = flow(
 );
 
 export const importBase64UrlJWKTE = (input: string) =>
-  pipe(input.trim().split(" "), base64urlKeys =>
+  pipe(input.trim().split("#"), base64urlKeys =>
     AP.sequenceS(E.Apply)({
       publicKeyJwk: base64urltoJWK(base64urlKeys[0]),
       privateKeyJwk: base64urltoJWK(base64urlKeys[1])

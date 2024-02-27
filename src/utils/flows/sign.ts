@@ -208,15 +208,26 @@ const SignFlowPrompts: PromptObject[] = [
   {
     name: "CustomKeyPair",
     message:
-      "Insert the keypair(base64url formatted JWK)(public key, space character and then private key)",
-    type: prev => (typeof prev === "boolean" && prev === true ? "text" : null)
+      "Insert the keypair(base64url formatted JWK)(public key, '#' character and then private key)",
+    type: (_prev, values) =>
+      (typeof values.hasCustomKeyPair === "boolean" &&
+        values.hasCustomKeyPair === true) ||
+      (typeof values.hasCustomKeyPair === "string" &&
+        values.hasCustomKeyPair === "true")
+        ? "text"
+        : null
   },
   // only executes if the customkeypair didn't produce any result
   {
     name: "KeypairAlgorithm",
     message: "Choose an algorithm for the keypair from the ones supported",
     type: (_prev, values) =>
-      values.hasCustomKeyPair === true ? null : "autocomplete",
+      (typeof values.hasCustomKeyPair === "boolean" &&
+        values.hasCustomKeyPair === true) ||
+      (typeof values.hasCustomKeyPair === "string" &&
+        values.hasCustomKeyPair === "true")
+        ? null
+        : "autocomplete",
     choices: [
       { title: "ECDSA P-256", value: "ES256" },
       { title: "RSA", value: "RS256" }
