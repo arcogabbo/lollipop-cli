@@ -12,14 +12,18 @@ export const COMMAND_PREFIX = "curl ";
 // utils
 export const concat = (...strings: string[]) =>
   strings.reduce((acc, curr) => S.Monoid.concat(acc, curr), "");
-export const wrapWithNewLine = (i: string) => `${i} \\\n`;
-export const addHeader = (headerName: string, headerValue: string) =>
-  wrapWithNewLine(`-H '${headerName}:${headerValue}'`);
+export const wrapWithNewLine = (i: string, backslash: boolean = true) =>
+  `${i} ${backslash ? "\\" : ""}\n`;
+export const addHeader = (
+  headerName: string,
+  headerValue: string,
+  backslash: boolean = true
+) => wrapWithNewLine(`-H '${headerName}:${headerValue}'`, backslash);
 
 export const addMethod = (method: LollipopMethod) =>
-  wrapWithNewLine(`-X ${method}`);
-export const addLocation = (url: string) => wrapWithNewLine(`-L ${url}`);
-export const addBody = (body: string) => wrapWithNewLine(`-d ${body}`);
+  wrapWithNewLine(`-X ${method}`, true);
+export const addLocation = (url: string) => wrapWithNewLine(`-L ${url}`, true);
+export const addBody = (body: string) => wrapWithNewLine(`-d ${body}`, true);
 //
 
 // methods for curl composing for some use cases
@@ -82,5 +86,5 @@ export const composeCurlForGenericSign = (input: GenericSignInput) =>
       O.map(_ => addHeader("content-type", "application/json")),
       O.getOrElse(() => "")
     ),
-    addHeader("authorization", "Bearer <INSERT_TOKEN_HERE>")
+    addHeader("authorization", "Bearer <INSERT_TOKEN_HERE>", false)
   );

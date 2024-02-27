@@ -26,6 +26,7 @@ import {
 } from "../../generated/lollipop_definitions/AssertionType";
 import { UUIDv4Nonce } from "../../generated/lollipop_definitions/UUIDv4Nonce";
 import { composeCurlForGenericSign } from "../curl/composition";
+import { BooleanFromString } from "@pagopa/ts-commons/lib/booleans";
 
 const SignAnswersDecoder = t.intersection([
   t.strict({
@@ -33,9 +34,10 @@ const SignAnswersDecoder = t.intersection([
     "x-pagopa-lollipop-original-url": LollipopOriginalURL,
     "x-pagopa-lollipop-user-id": LollipopUserId,
     "x-pagopa-lollipop-assertion-type": AssertionType,
-    hasCustomKeyPair: t.boolean,
-    hasBody: t.boolean,
-    hasNonce: t.boolean
+    // when passing through the cli arguments, the value is ALWAYS taken as string type
+    hasCustomKeyPair: t.union([BooleanFromString, t.boolean]),
+    hasBody: t.union([BooleanFromString, t.boolean]),
+    hasNonce: t.union([BooleanFromString, t.boolean])
   }),
   t.partial({
     nonce: t.string,
@@ -64,6 +66,9 @@ export const parseBodyFromAnswers: (
     )
   );
 
+const outputToCurlDecoder = t.type({
+  outputToCurl: t.union([BooleanFromString, t.boolean])
+});
 const outputToCurlPrompt: PromptObject = {
   name: "outputToCurl",
   message:
@@ -127,9 +132,7 @@ export const signFlow: TE.TaskEither<Error, signFlowResult> = pipe(
   TE.bind("hasCurlFormat", () =>
     pipe(
       TE.tryCatch(() => prompts(outputToCurlPrompt), E.toError),
-      TE.chain(answers =>
-        decodeAnswers(answers, t.type({ outputToCurl: t.boolean }))
-      ),
+      TE.chain(answers => decodeAnswers(answers, outputToCurlDecoder)),
       TE.map(decodedAnswer => decodedAnswer.outputToCurl)
     )
   ),
@@ -212,7 +215,8 @@ const SignFlowPrompts: PromptObject[] = [
   {
     name: "KeypairAlgorithm",
     message: "Choose an algorithm for the keypair from the ones supported",
-    type: prev => (typeof prev === "string" ? null : "autocomplete"),
+    type: (_prev, values) =>
+      values.hasCustomKeyPair === true ? null : "autocomplete",
     choices: [
       { title: "ECDSA P-256", value: "ES256" },
       { title: "RSA", value: "RS256" }
