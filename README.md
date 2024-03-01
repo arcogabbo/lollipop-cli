@@ -1,10 +1,10 @@
-### What is this
+## What is this
 This project aims to facilitate the making of a request that follows the PagoPA S.p.A. Proof of Possession 
 protocol(codename lollipop) rules. With an interactive cli and some utility methods this can be achievable.
 
 **NOTE**: **This project it's in highly experimental state.**
 
-### How do I use it?
+## How do I use it?
 You can either import the lollipop utility methods or interact with the cli command `lollipop-cli`.
 The cli also supports arguments instead of a prompt-based interaction. 
 For example, the following argument will skip the first prompt:
@@ -13,8 +13,8 @@ For example, the following argument will skip the first prompt:
 lollipop-cli --flow Sign
 ```
 
-### Flows
-#### Key pair generation
+## Supported Flows
+### Key pair generation
 This flow lets you create a key pair based on an algorithm supported by the protocol.
 The two choices are:
 * NIST P-256
@@ -25,7 +25,13 @@ The output contains:
 * The base64url encoded representation of both keys
 * The thumbprint of the public key(using sha-256)
 
-#### Sign
+
+#### Example of Key generation Flow through cli arguments
+```bash
+lollipop-cli --flow KeyPairCreation --algorithm ES256
+```
+
+### Sign
 The sign flow lets you provide a lot of parameters to feed a sign request to a lollipop consumer.
 **NOTE**: the lollipop consumer custom integration may require or ignore some parameters(like nonce and/or body parameter sign)
 The output of this flow is an object with the following fields:
@@ -38,6 +44,17 @@ You can however decide to ouput a curl compatible shell command almost ready to 
 Video example:
 
 https://github.com/arcogabbo/lollipop-cli/assets/22002572/0dd3ea95-3c41-4ccb-a565-dc3b1002f0af
+
+#### Example of Sign Flow through cli arguments
+```bash
+lollipop-cli --flow Sign --x-pagopa-lollipop-method <METHOD> \
+--x-pagopa-lollipop-original-url <URL> \
+--x-pagopa-lollipop-user-id <USER_FISCAL_CODE> \
+--x-pagopa-lollipop-assertion-type SAML \
+--hasCustomKeyPair true --hasBody <TRUE_OR_FALSE> --hasNonce <TRUE_OR_FALSE> \
+--CustomKeyPair <BASE64URL_ENCODED_PUBLIC_KEY_JWK>#<BASE64URL_ENCODED_PRIVATE_KEY_JWK> \
+--outputToCurl true
+```
 
 #### Login
 TODO
