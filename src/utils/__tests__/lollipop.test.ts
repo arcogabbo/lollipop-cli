@@ -2,6 +2,7 @@ import { LollipopMethodEnum } from "../../generated/lollipop_definitions/Lollipo
 import { LollipopOriginalURL } from "../../generated/lollipop_definitions/LollipopOriginalURL";
 import { createLollipopHeaders } from "../lollipop";
 import { randomUUID } from "crypto";
+import { describe, it, expect } from "vitest";
 
 const anUrl = "https://example.com";
 const aNonce = randomUUID({ disableEntropyCache: true });

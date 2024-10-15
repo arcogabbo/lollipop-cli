@@ -6,6 +6,8 @@ import {
   addBody,
   addHeader
 } from "../composition";
+import { describe, it, expect } from "vitest";
+
 const anUrl = "https://example.com";
 describe("curl composition", () => {
   it("should compose a curl command with location", () => {
