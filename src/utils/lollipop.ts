@@ -7,6 +7,7 @@ import {
 import * as jose from "jose";
 import * as TE from "fp-ts/lib/TaskEither";
 import * as E from "fp-ts/lib/Either";
+import * as B from "fp-ts/boolean";
 import * as t from "io-ts";
 import { pipe, flow } from "fp-ts/function";
 import * as AP from "fp-ts/Apply";
@@ -18,8 +19,6 @@ import { LollipopOriginalURL } from "../generated/lollipop_definitions/LollipopO
 import { randomUUID } from "crypto";
 import { Json } from "fp-ts/lib/Json";
 import { parseJwkOrError } from "@pagopa/ts-commons/lib/jwk";
-
-const textDecoder = new TextDecoder("utf-8");
 
 type lolliPopDynamicHeaders = {
   digest?: string;
@@ -110,7 +109,20 @@ export const createKeyPairJWKTE = (algorithm: LollipopSupportedKeyAlgorithms) =>
     TE.chain(keys =>
       AP.sequenceS(TE.ApplyPar)({
         privateKeyJwk: wrappedExportJwk(keys.privateKey),
-        publicKeyJwk: wrappedExportJwk(keys.publicKey)
+        publicKeyJwk: pipe(
+          wrappedExportJwk(keys.publicKey),
+          // BUG: although the alg field is optional in RFC 7518,
+          // this is required for the backend in order to work
+          TE.map(jwk =>
+            pipe(
+              algorithm === LollipopSupportedKey.RSA,
+              B.fold(
+                () => jwk,
+                () => ({ ...jwk, alg: LollipopSupportedKey.RSA })
+              )
+            )
+          )
+        )
       })
     )
   );
